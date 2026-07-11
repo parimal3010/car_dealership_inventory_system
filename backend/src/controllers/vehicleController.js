@@ -20,6 +20,16 @@ const createVehicle = async (req, res) => {
   });
 };
 
+const getVehicles = async (_req, res) => {
+  const vehicles = await Vehicle.find().sort({ createdAt: -1 });
+
+  return res.status(200).json({
+    count: vehicles.length,
+    vehicles: vehicles.map(formatVehicleResponse),
+  });
+};
+
 module.exports = {
   createVehicle,
+  getVehicles,
 };
