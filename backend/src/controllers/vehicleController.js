@@ -2,6 +2,7 @@ const Vehicle = require('../models/Vehicle');
 const {
   formatVehicleResponse,
   validateVehicleInput,
+  buildSearchFilter,
 } = require('../utils/validateVehicle');
 
 const createVehicle = async (req, res) => {
@@ -29,7 +30,23 @@ const getVehicles = async (_req, res) => {
   });
 };
 
+const searchVehicles = async (req, res) => {
+  const { filter, error } = buildSearchFilter(req.query);
+
+  if (error) {
+    return res.status(400).json({ message: error });
+  }
+
+  const vehicles = await Vehicle.find(filter).sort({ createdAt: -1 });
+
+  return res.status(200).json({
+    count: vehicles.length,
+    vehicles: vehicles.map(formatVehicleResponse),
+  });
+};
+
 module.exports = {
   createVehicle,
   getVehicles,
+  searchVehicles,
 };
